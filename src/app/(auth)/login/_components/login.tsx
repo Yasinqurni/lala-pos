@@ -1,23 +1,45 @@
 'use client'
 
+import FormInput from "@/components/common/form-input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { INITIAL_LOGIN_FORM } from "@/constans/auth-constan";
-import { LoginForm, loginSchema } from "@/validations/auth-validation";
+import { Form } from "@/components/ui/form";
+import { INITIAL_LOGIN_FORM, INITIAL_STATE_LOGIN_FORM } from "@/constants/auth-constant";
+import { LoginForm, loginSchemaForm } from "@/validations/auth-validation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { startTransition, useActionState, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { login } from "../action";
+import { Loader2 } from "lucide-react";
 
 export default function Login() {
   const form = useForm<LoginForm>({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(loginSchemaForm),
     defaultValues: INITIAL_LOGIN_FORM
   })
 
+  const [ loginState, loginAction, isPendingLogin ] = useActionState(login, INITIAL_STATE_LOGIN_FORM)
+
   const onSubmit = form.handleSubmit(async (data) => {
-    console.log(data)
-  })
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+
+    startTransition(() => {
+      loginAction(formData)
+    })
+
+  });
+
+  useEffect(() => {
+    if (loginState?.status === 'error') {
+      startTransition(() => {
+        loginAction(null)
+      })
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ loginState ]);
 
   return (
     <Card>
@@ -28,35 +50,19 @@ export default function Login() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={onSubmit} className="space-y-4">
-            <FormField control={form.control} name="email" render={({ field: {...rest} }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input 
-                    {...rest}
-                    type="email" 
-                    placeholder="please input email" 
-                    autoComplete="off"
-                  />
-                  </FormControl>
-                <FormMessage className="text-xs"/>
-              </FormItem>
-            )} />
-            <FormField control={form.control} name="password" render={({ field: {...rest}  })=> (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input 
-                    {...rest}
-                    type="password" 
-                    placeholder="please input password" 
-                    autoComplete="off"
-                  />
-                  </FormControl>
-                <FormMessage className="text-xs"/>
-              </FormItem>
-            )} />
-            <Button type="submit">Login</Button>
+            <FormInput 
+              form={form} 
+              name='email' 
+              label="Email"
+              placeholder="please input email"
+            />
+            <FormInput 
+              form={form} 
+              name='password' 
+              label="Password"
+              placeholder="please input password"
+            />
+            <Button type="submit">{isPendingLogin ? <Loader2 className="animate-spin"/> : 'Login'}</Button>
           </form>
         </Form>
       </CardContent>
