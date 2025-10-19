@@ -13,11 +13,18 @@ import { DEFAULT_ACTION_DROPDOWN } from "@/constants/default-constant";
 import useDatatable from "@/hooks/use-datatable";
 
 export default function UserManagement() {
-  const {currentPage, handleChangePage, currentLimit, handleChangeLimit} = useDatatable()
+  const {
+    currentPage, 
+    handleChangePage, 
+    currentLimit, 
+    handleChangeLimit,
+    currentSearch,
+    handleChangeSearch,
+  } = useDatatable()
 
   const { data: users, isLoading } = useQuery({
-    queryKey: ['users', currentLimit, currentPage],
-    queryFn: () => getUsers(currentLimit, currentPage),
+    queryKey: ['users', currentLimit, currentPage, currentSearch],
+    queryFn: () => getUsers(currentLimit, currentPage, currentSearch),
   });
 
   const filteredData = useMemo(() => {
@@ -42,7 +49,7 @@ export default function UserManagement() {
       <div className="flex flex-col lg:flex-row mb-4 gap-2 justify-between w-full">
         <h1 className="font-bold">User Management</h1>
         <div className="flex gap-2">
-          <Input placeholder="Search by name" />
+          <Input placeholder="Search by name" onChange={(e) => (handleChangeSearch(e.target.value))} />
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="outline">Add</Button>

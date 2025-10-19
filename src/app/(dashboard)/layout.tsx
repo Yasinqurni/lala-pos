@@ -4,6 +4,7 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { ReactNode } from "react";
 import DashboardBreadcrumb from "./_components/dashboard-breadcrumb";
+import ProfileToggle from "@/components/common/profile-toggle";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
@@ -16,9 +17,14 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               <Separator orientation='vertical' className="mr-2 data-[orientation=vertical]:h-4"/>
               <DashboardBreadcrumb />
             </div>
-            <div className="px-4">
+           <div className="flex justify-between items-center px-4 py-2">
+            <div>
               <DarkModeToggle />
             </div>
+            <div>
+              <ProfileToggle />
+            </div>
+          </div>
           </header>
           <main className="flex flex-1 flex-col items-start gap-4 p-4 pt-0">
             {children}
