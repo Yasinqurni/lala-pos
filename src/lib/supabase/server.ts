@@ -5,10 +5,11 @@ import { cookies } from "next/headers";
 export type createClientOptions = {
     isAdmin?: boolean;
 }
-export async function createClient({isAdmin= false}: createClientOptions = {}) {
+export async function createClient({isAdmin= true}: createClientOptions = {}) {
     const cookiesStore = await cookies();
 
     const { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_ACCESS_ROLE_KEY } = environment;
+    
     return createServerClient(
         SUPABASE_URL!, 
         isAdmin ? SUPABASE_ACCESS_ROLE_KEY : SUPABASE_ANON_KEY!,

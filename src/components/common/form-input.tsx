@@ -3,6 +3,13 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 
+interface FormInputProps<T extends FieldValues> {
+    form: UseFormReturn<T>;
+    name: Path<T>;
+    label: string; 
+    placeholder?: string;
+    type?: string; 
+  }
 
 export default function FormInput<T extends FieldValues>(
   { 
@@ -11,14 +18,7 @@ export default function FormInput<T extends FieldValues>(
     label, 
     placeholder, 
     type = 'text',
-  }: {
-    form: UseFormReturn<T>;
-    name: Path<T>;
-    label: string; 
-    placeholder?: string;
-    type?: string; 
-  }
-) {
+  }: FormInputProps<T>) {
   return (
     <FormField 
       control={form.control} 

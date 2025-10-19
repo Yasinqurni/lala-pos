@@ -1,6 +1,7 @@
 'use server';
 
 import { INITIAL_STATE_LOGIN_FORM } from '@/constants/auth-constant';
+import { COOKIE_CONSTANTS } from '@/constants/cookie-constant';
 import { createClient } from '@/lib/supabase/server';
 import { AuthFormState } from '@/types/auth';
 import { loginSchemaForm } from '@/validations/auth-validation';
@@ -54,13 +55,14 @@ export async function login(
     .eq('id', user?.id)
     .single();
 
+
   if (profile) {
     const cookiesStore = await cookies();
-    cookiesStore.set('user_profile', JSON.stringify(profile), {
+    cookiesStore.set(COOKIE_CONSTANTS.auth_cookies, JSON.stringify(profile), {
       httpOnly: true,
       path: '/',
       sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 365,
+      maxAge: 60 * 60 * 24,
     });
   }
 
