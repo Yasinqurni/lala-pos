@@ -2,6 +2,7 @@ export const DATA_TABLE_USER_HEADER = [
     'No',
     'Id',
     'Name',
+    'Email',
     'Role',
     'Action',
 ]
