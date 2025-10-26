@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 
-export async function getUsers(limit :number, page: number, search: string) {
+export async function getUserQuery(limit :number, page: number, search: string) {
   const supabase = createClient();
 
   const query = supabase

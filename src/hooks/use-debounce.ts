@@ -1,6 +1,6 @@
 import { useRef } from "react";
 
-export default function UseDebounce() {
+export default function UseDebounceHook() {
     const debounceTimeout = useRef<NodeJS.Timeout | null>(null)
 
     const debounce = (func: () => void, delay: number) => {

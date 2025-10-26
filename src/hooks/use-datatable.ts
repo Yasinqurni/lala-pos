@@ -2,7 +2,7 @@ import { DEFAULT_LIMIT_LIST_PAGINATION, DEFAULT_PAGE, DEFAULT_SEARCH } from "@/c
 import { useState } from "react";
 import UseDebounce from "./use-debounce";
 
-export default function useDatatable() {
+export default function useDatatableHook() {
     const [currentPage, setCurrentPage] = useState(DEFAULT_PAGE);
     const [currentLimit, setCurrentLimit] = useState(DEFAULT_LIMIT_LIST_PAGINATION);
     const [ currentSearch, setCurrentSearch] = useState(DEFAULT_SEARCH);

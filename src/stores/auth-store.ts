@@ -1,13 +1,13 @@
 import { INITIAL_PROFILE_STATE } from "@/constants/auth-constant";
-import { Profile } from "@/types/auth"
+import { ProfileType } from "@/types/auth"
 import { User } from "@supabase/supabase-js"
 import { create } from "zustand"
 
 type AuthState = {
     user: User | null;
-    profile: Profile;
+    profile: ProfileType;
     setUser: (user: User | null) => void;
-    setProfile: (profile: Profile) => void;
+    setProfile: (profile: ProfileType) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({

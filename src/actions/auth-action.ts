@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 
-export default async function signOut() {
+export default async function signOutAction() {
     const supabase = await createClient();
     const cookiesStore = await cookies();
     await supabase.auth.signOut();

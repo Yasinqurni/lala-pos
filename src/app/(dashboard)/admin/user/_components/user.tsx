@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { DATA_TABLE_USER_HEADER } from "@/constants/datatable-constant";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { getUsers } from "@/queries/users/get-users";
+import { getUserQuery } from "@/queries/users/get-users";
 import DropdownAction from "@/components/common/dropdown-action";
 import { DEFAULT_ACTION_DROPDOWN } from "@/constants/default-constant";
 import useDatatable from "@/hooks/use-datatable";
@@ -25,7 +25,7 @@ export default function UserManagement() {
 
   const { data: users, isLoading } = useQuery({
     queryKey: ['users', currentLimit, currentPage, currentSearch],
-    queryFn: () => getUsers(currentLimit, currentPage, currentSearch),
+    queryFn: () => getUserQuery(currentLimit, currentPage, currentSearch),
   });
 
   const filteredData = useMemo(() => {

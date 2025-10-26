@@ -3,21 +3,21 @@
 import { INITIAL_STATE_LOGIN_FORM } from '@/constants/auth-constant';
 import { COOKIE_CONSTANTS } from '@/constants/cookie-constant';
 import { createClient } from '@/lib/supabase/server';
-import { AuthFormState } from '@/types/auth';
-import { loginSchemaForm } from '@/validations/auth-validation';
+import { AuthFormStateType } from '@/types/auth';
+import { loginSchemaFormValidation } from '@/validations/auth-validation';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-export async function login(
-  prevState: AuthFormState,
+export async function loginAction(
+  prevState: AuthFormStateType,
   formData: FormData | null,
 ) {
   if (!formData) {
     return INITIAL_STATE_LOGIN_FORM;
   }
 
-  const validatedFields = loginSchemaForm.safeParse({
+  const validatedFields = loginSchemaFormValidation.safeParse({
     email: formData.get('email'),
     password: formData.get('password'),
   });

@@ -1,19 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client'
+'use client';
 
-import { Path, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Form } from "@/components/ui/form";
-import FormInput from "@/components/common/form-input";
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
-import { z, ZodType } from "zod";
+import { useState, useEffect } from 'react';
+import { Path, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form } from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
+import { z, ZodType } from 'zod';
+import FormInput from '@/components/common/form-input';
+import FormImage from '@/components/common/form-image';
 
 export type DynamicFormField = {
   name: string;
   label: string;
   placeholder?: string;
-  type?: "text" | "password" | "email" | "number" | "select" | "textarea" | "file";
+  type?:
+    | 'text'
+    | 'password'
+    | 'email'
+    | 'number'
+    | 'select'
+    | 'textarea'
+    | 'file';
   options?: { label: string; value: string }[];
 };
 
@@ -36,36 +45,60 @@ export default function DynamicForm<TSchema extends ZodType<any, any>>({
   isPending = false,
   cancelButton = false,
   onCancel,
-  submitText = "Submit",
+  submitText = 'Submit',
 }: DynamicFormProps<TSchema>) {
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema) as any,
     defaultValues,
   });
 
+  const [previews, setPreviews] = useState<
+    Record<string, { file: File; displayUrl: string } | undefined>
+  >({});
+
   const handleSubmit = form.handleSubmit((data) => {
     const formData = new FormData();
+
     Object.entries(data).forEach(([key, value]) => {
-      formData.append(key, value as any);
+      if (key === "avatar_url") {
+        const file = previews[key]?.file;
+        if (file) {
+          formData.append(key, file);
+        }
+      } else {
+        formData.append(key, String(value ?? ""));
+      }
     });
     onSubmit(formData, data);
   });
+
+
+  useEffect(() => {
+    const subscription = form.watch((_, { name }) => {
+      if (name && fields.some((f) => f.name === name && f.type === 'file')) {
+        setPreviews((prev) => ({ ...prev, [name]: undefined }));
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form, fields]);
 
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit} className="space-y-4">
         {fields.map((field) => {
-          if (field.type === "select" && field.options) {
+          if (field.type === 'select' && field.options) {
             return (
               <div key={field.name}>
-                <label className="block mb-1 text-sm font-medium">{field.label}</label>
+                <label className="block mb-1 text-sm font-medium">
+                  {field.label}
+                </label>
                 <select
                   {...form.register(field.name as any)}
                   className="border rounded-md px-3 py-2 w-full"
                 >
                   <option value="">Select {field.label}</option>
                   {field.options.map((opt) => (
-                    <option key={opt.label} value={opt.value}>
+                    <option key={opt.value} value={opt.value}>
                       {opt.label}
                     </option>
                   ))}
@@ -74,16 +107,18 @@ export default function DynamicForm<TSchema extends ZodType<any, any>>({
             );
           }
 
-          if (field.type === "file") {
+          if (field.type === 'file') {
             return (
-              <div key={field.name}>
-                <label className="block mb-1 text-sm font-medium">{field.label}</label>
-                <input
-                  type="file"
-                  {...form.register(field.name as any)}
-                  className="border rounded-md px-3 py-2 w-full"
-                />
-              </div>
+              <FormImage
+                key={field.name}
+                form={form}
+                name={field.name as Path<z.infer<TSchema>>}
+                label={field.label}
+                preview={previews[field.name]}
+                setPreview={(preview) =>
+                  setPreviews((prev) => ({ ...prev, [field.name]: preview }))
+                }
+              />
             );
           }
 
@@ -94,7 +129,7 @@ export default function DynamicForm<TSchema extends ZodType<any, any>>({
               name={field.name as Path<z.infer<TSchema>>}
               label={field.label}
               placeholder={field.placeholder}
-              type={field.type || "text"}
+              type={field.type || 'text'}
             />
           );
         })}
@@ -106,6 +141,7 @@ export default function DynamicForm<TSchema extends ZodType<any, any>>({
               variant="outline"
               onClick={() => {
                 form.reset(defaultValues);
+                setPreviews({});
                 onCancel?.();
               }}
             >

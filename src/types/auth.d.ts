@@ -1,4 +1,4 @@
-export type AuthFormState = {
+export type AuthFormStateType = {
     status?: string;
     errors?: {
         email?: string[];

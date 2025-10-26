@@ -26,5 +26,5 @@ export const FIELD_USER_FORM: DynamicFormField[]  = [
     { name: "password", label: "Password", type: "password", placeholder: "please input password" },
     { name: "name", label: "Name", type: "text", placeholder: "please input name" },
     { name: "role", label: "Role", type: "select", placeholder: "please input role", options: [{label: 'Admin', value: 'admin'}, {label: 'User', value: 'user'}] },
-    // { name: "avatar_url", label: "Avatar", type: "file" },
+    { name: "avatar_url", label: "Avatar", type: "file" },
 ]
