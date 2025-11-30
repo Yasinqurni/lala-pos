@@ -7,14 +7,13 @@ import { toast } from "sonner";
 import { createProductAction } from "@/actions/product/create-product-action";
 import { productSchemaFormValidation } from "@/validations/product-validation";
 import { FIELD_PRODUCT_FORM, INITIAL_PRODUCT_FORM, INITIAL_STATE_PRODUCT_FORM } from "@/constants/product-constant";
-import { useQueryClient } from "@tanstack/react-query";
 
 type DialogCreateProductProps = {
   onClose: () => void;
+  refetch: () => void;
 };
 
-export default function DialogCreateProduct({ onClose }: DialogCreateProductProps) {
-  const queryClient = useQueryClient();
+export default function DialogCreateProduct({ onClose, refetch }: DialogCreateProductProps) {
   const [createProductState, action, isPendingCreateProduct] =
     useActionState(createProductAction, INITIAL_STATE_PRODUCT_FORM);
 
@@ -33,12 +32,10 @@ export default function DialogCreateProduct({ onClose }: DialogCreateProductProp
 
     if (createProductState?.status === "success") {
       toast.success("Create Product Success");
-      queryClient.invalidateQueries({
-        queryKey: ["products"],
-      });
+      refetch();
       onClose();
     }
-  }, [createProductState, onClose, queryClient]);
+  }, [createProductState, onClose, refetch]);
 
   return (
     <DialogContent className="sm:max-w-[425px]">

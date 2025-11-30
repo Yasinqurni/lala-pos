@@ -9,7 +9,7 @@ import { DATA_TABLE_PRODUCT_HEADER } from "@/constants/datatable-constant";
 import { DEFAULT_ACTION_DROPDOWN } from "@/constants/default-constant";
 import useDatatable from "@/hooks/use-datatable";
 import { getProductQuery } from "@/queries/products/get-product";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import DialogCreateProduct from "./dialog-create-product";
 
@@ -24,12 +24,19 @@ export default function ProductManagement() {
         handleChangeSearch,
       } = useDatatable();
 
+      const queryClient = useQueryClient();
       const [openCreate, setOpenCreate] = useState(false);
     
       const { data: products, isLoading } = useQuery({
         queryKey: ["products", currentLimit, currentPage, currentSearch],
         queryFn: () => getProductQuery(currentLimit, currentPage, currentSearch),
       });
+
+      const refetch = () => {
+        queryClient.invalidateQueries({
+          queryKey: ["products"],
+        });
+      };
 
       const filteredData = useMemo(() => {
         return (products?.data || []).map((each, index) => {
@@ -68,7 +75,7 @@ export default function ProductManagement() {
             <DialogTrigger asChild>
               <Button variant="outline">Add</Button>
             </DialogTrigger>
-            {openCreate && <DialogCreateProduct onClose={() => setOpenCreate(false)} />}
+            {openCreate && <DialogCreateProduct onClose={() => setOpenCreate(false)} refetch={refetch} />}
           </Dialog>
           </div>
         </div>
