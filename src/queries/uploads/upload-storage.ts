@@ -2,11 +2,12 @@
 
 import { environment } from "@/configs/environment";
 import { createClient } from "@/lib/supabase/server"
+import { toast } from "sonner";
 
 export async function uploadFileQuery(
-    bucket: string, 
-    path: string, 
-    file: File, 
+    bucket: string,
+    path: string,
+    file: File,
     prevPath?: string,
 ) {
     const supabase = await createClient();
@@ -20,7 +21,7 @@ export async function uploadFileQuery(
                 errors: {
                     _form: [error.message]
                 },
-                
+
             }
         }
     }
@@ -45,21 +46,15 @@ export async function uploadFileQuery(
 }
 
 export async function deleteFileQuery(
-    bucket: string, 
+    bucket: string,
     path: string,
 ) {
     const supabase = await createClient();
 
     const { error } = await supabase.storage.from(bucket).remove([path])
     if (error) {
-        return {
-            errors: {
-                _form: [error.message]
-            }
-        }
+        toast.error('Delete User Image Failed', { description: error.message });
     }
 
-    return {
-        errors: null
-    }
+    return { error: null };
 }

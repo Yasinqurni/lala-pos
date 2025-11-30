@@ -11,13 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { FileImage } from 'lucide-react';
 import { getImageDataUtil } from '@/lib/utils';
 
-export default function FormImage<T extends FieldValues>({
-  form,
-  name,
-  label,
-  preview,
-  setPreview,
-}: {
+interface FormInputProps<T extends FieldValues> {
   form: UseFormReturn<T>;
   name: Path<T>;
   label: string;
@@ -26,7 +20,18 @@ export default function FormImage<T extends FieldValues>({
     displayUrl: string;
   };
   setPreview?: (preview: { file: File; displayUrl: string }) => void;
-}) {
+  disabled?: boolean;
+}
+
+export default function FormImage<T extends FieldValues>({
+  form,
+  name,
+  label,
+  preview,
+  setPreview,
+  disabled = false,
+}: FormInputProps<T>) {
+
   return (
     <FormField
       control={form.control}
@@ -51,7 +56,7 @@ export default function FormImage<T extends FieldValues>({
                 name={rest.name}
                 ref={rest.ref}
                 onBlur={rest.onBlur}
-                disabled={rest.disabled}
+                disabled={disabled}
                 onChange={async (event) => {
                   onChange(event);
                   const { file, displayUrl } = getImageDataUtil(event);
@@ -71,4 +76,3 @@ export default function FormImage<T extends FieldValues>({
     />
   );
 }
-

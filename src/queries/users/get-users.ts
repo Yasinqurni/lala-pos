@@ -8,7 +8,7 @@ export async function getUserQuery(limit :number, page: number, search: string) 
     .from('profiles')
     .select('*', { count: 'exact' })
     .range((page - 1) * limit, page * limit - 1)
-    .order('created_at');
+    .order('created_at', { ascending: false });
 
   if (search !== '') {
     query.ilike('name', `%${search}%`)
@@ -16,7 +16,7 @@ export async function getUserQuery(limit :number, page: number, search: string) 
 
   const result = await query
   if (result.error) {
-    toast.error('Get Profile Failed', { description: result.error.message });
+    toast.error('Get Users Failed', { description: result.error.message });
     throw new Error(result.error.message);
   }
 

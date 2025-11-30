@@ -7,3 +7,9 @@ export const userSchemaFormValidation = z.object({
     role: z.string().min(1, "name is required"),
     avatar_url: z.union([z.string().min(1, "avatar_url is required"), z.instanceof(File)]),
 })
+
+export const userUpdateSchemaFormValidation = z.object({
+    name: z.string().optional(),
+    role: z.string().optional(),
+    avatar_url: z.union([z.string(), z.instanceof(File)]).optional(),
+})

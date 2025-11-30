@@ -2,17 +2,17 @@
 
 import { environment } from '@/configs/environment';
 import { uploadFileQuery } from '@/queries/uploads/upload-storage';
-import { CreateUserQuery } from '@/queries/users/create-user';
-import { AuthFormStateType } from '@/types/auth';
-import { userSchemaFormValidation } from '@/validations/user-validation';
+import { updateUserQuery } from '@/queries/users/update-user';
+import { UpdateUserFormStateType } from '@/types/auth';
+import { userUpdateSchemaFormValidation } from '@/validations/user-validation';
 
-export async function createUserAction(
-  prevState: AuthFormStateType,
+export async function updateUserAction(
+  prevState: UpdateUserFormStateType,
   formData: FormData,
 ) {
-  const validatedFields = userSchemaFormValidation.safeParse({
-    email: formData.get('email'),
-    password: formData.get('password'),
+  const id = formData.get('id') as string;
+
+  const validatedFields = userUpdateSchemaFormValidation.safeParse({
     name: formData.get('name'),
     role: formData.get('role'),
     avatar_url: formData.get('avatar_url'),
@@ -33,8 +33,8 @@ export async function createUserAction(
 
   if (avatarData instanceof File) {
     const { data, errors } = await uploadFileQuery(
-      environment.SUPABASE_BUCKET, 
-      'user', 
+      environment.SUPABASE_BUCKET,
+      'user',
       avatarData,
     )
 
@@ -53,9 +53,7 @@ export async function createUserAction(
     avatarUrl = avatarData;
   }
 
-  const { error } = await CreateUserQuery({
-    email: validatedFields.data.email,
-    password: validatedFields.data.password,
+  const { error } = await updateUserQuery(id, {
     name: validatedFields.data.name,
     role: validatedFields.data.role,
     avatar_url: avatarUrl,
@@ -67,7 +65,7 @@ export async function createUserAction(
     status: 'error',
     errors: {
         ...prevState.errors,
-        _form: [error.message],
+        _form: [error],
     },
     };
   }
@@ -76,4 +74,3 @@ export async function createUserAction(
     status: 'success'
   }
 }
-

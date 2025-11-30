@@ -6,9 +6,13 @@ import { FIELD_USER_FORM, INITIAL_STATE_USER_FORM, INITIAL_USER_FORM } from "@/c
 import { userSchemaFormValidation } from "@/validations/user-validation";
 import { startTransition, useActionState, useEffect } from "react";
 import { toast } from "sonner";
-import { createUserAction } from "../action";
+import { createUserAction } from "@/actions/create-user-action";
 
-export default function DialogCreateUser({ onClose }: { onClose: () => void }) {
+type DialogCreateUserProps = {
+  onClose: () => void;
+};
+
+export default function DialogCreateUser({ onClose }: DialogCreateUserProps) {
   const [createUserState, action, isPendingCreateUser] =
     useActionState(createUserAction, INITIAL_STATE_USER_FORM);
 
@@ -33,14 +37,14 @@ export default function DialogCreateUser({ onClose }: { onClose: () => void }) {
 
   return (
     <DialogContent className="sm:max-w-[425px]">
-       <DialogTitle>Create User</DialogTitle> 
+       <DialogTitle>Create User</DialogTitle>
       <DynamicForm
         schema={userSchemaFormValidation}
         defaultValues={INITIAL_USER_FORM}
         fields={FIELD_USER_FORM}
         onSubmit={onSubmit}
         cancelButton={true}
-        onCancel={onClose} 
+        onCancel={onClose}
         isPending={isPendingCreateUser}
         submitText="Submit"
       />

@@ -6,22 +6,24 @@ import { Textarea } from "../ui/textarea";
 interface FormInputProps<T extends FieldValues> {
     form: UseFormReturn<T>;
     name: Path<T>;
-    label: string; 
+    label: string;
     placeholder?: string;
-    type?: string; 
+    type?: string;
+    disabled?: boolean;
   }
 
 export default function FormInput<T extends FieldValues>(
-  { 
-    form, 
-    name, 
-    label, 
-    placeholder, 
+  {
+    form,
+    name,
+    label,
+    placeholder,
     type = 'text',
+    disabled = false,
   }: FormInputProps<T>) {
   return (
-    <FormField 
-      control={form.control} 
+    <FormField
+      control={form.control}
       name={name}
       render={({ field: {...rest} }) => (
         <FormItem>
@@ -32,6 +34,7 @@ export default function FormInput<T extends FieldValues>(
               {...rest}
               placeholder={placeholder}
               autoComplete="off"
+              disabled={disabled}
             />
             ) : (
               <Input
@@ -39,13 +42,14 @@ export default function FormInput<T extends FieldValues>(
               type={name}
               placeholder={placeholder}
               autoComplete="off"
+              disabled={disabled}
             />
             )}
-            
+
           </FormControl>
           <FormMessage className="text-xs"/>
         </FormItem>
       )} />
   )
-  
+
 }

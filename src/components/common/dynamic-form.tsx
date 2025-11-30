@@ -23,12 +23,18 @@ export type DynamicFormField = {
     | 'select'
     | 'textarea'
     | 'file';
+  disabled?: boolean;
   options?: { label: string; value: string }[];
 };
+
+type FormMode = 'create' | 'update';
 
 type DynamicFormProps<TSchema extends ZodType<any, any>> = {
   schema: TSchema;
   defaultValues: z.infer<TSchema>;
+  data?: Partial<z.infer<TSchema>>;
+  /** default 'create' */
+  type?: FormMode;
   fields: DynamicFormField[];
   onSubmit: (formData: FormData, data: z.infer<TSchema>) => void;
   isPending?: boolean;
@@ -40,38 +46,75 @@ type DynamicFormProps<TSchema extends ZodType<any, any>> = {
 export default function DynamicForm<TSchema extends ZodType<any, any>>({
   schema,
   defaultValues,
+  data,
+  type = 'create',
   fields,
   onSubmit,
   isPending = false,
   cancelButton = false,
   onCancel,
-  submitText = 'Submit',
+  submitText,
 }: DynamicFormProps<TSchema>) {
+
+  const initialValues = (type === 'update'
+    ? { ...defaultValues, ...data }
+    : defaultValues) as z.infer<TSchema>;
+
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema) as any,
-    defaultValues,
+    defaultValues: initialValues,
   });
 
   const [previews, setPreviews] = useState<
     Record<string, { file: File; displayUrl: string } | undefined>
   >({});
 
-  const handleSubmit = form.handleSubmit((data) => {
+  useEffect(() => {
+    const newValues =
+      type === 'update'
+        ? ({ ...defaultValues, ...data } as z.infer<TSchema>)
+        : (defaultValues as z.infer<TSchema>);
+
+    form.reset(newValues);
+
+    const initialPreviews: Record<
+      string,
+      { file: File; displayUrl: string } | undefined
+    > = {};
+
+    fields.forEach((field) => {
+      if (field.type !== 'file') return;
+
+      const rawValue = (newValues as any)[field.name];
+
+      if (rawValue instanceof File) {
+        const url = URL.createObjectURL(rawValue);
+        initialPreviews[field.name] = {
+          file: rawValue,
+          displayUrl: url,
+        };
+      }
+    });
+
+  setPreviews(initialPreviews);
+}, [type, data, defaultValues, form, fields]);
+
+
+  const handleSubmit = form.handleSubmit((values) => {
     const formData = new FormData();
 
-    Object.entries(data).forEach(([key, value]) => {
-      if (key === "avatar_url") {
+    Object.entries(values).forEach(([key, value]) => {
+      if (key === 'avatar_url') {
         const file = previews[key]?.file;
         if (file) {
           formData.append(key, file);
         }
       } else {
-        formData.append(key, String(value ?? ""));
+        formData.append(key, String(value ?? ''));
       }
     });
-    onSubmit(formData, data);
+    onSubmit(formData, values);
   });
-
 
   useEffect(() => {
     const subscription = form.watch((_, { name }) => {
@@ -98,7 +141,7 @@ export default function DynamicForm<TSchema extends ZodType<any, any>>({
                 >
                   <option value="">Select {field.label}</option>
                   {field.options.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
+                    <option key={opt.value} value={opt.value} disabled={field.disabled}>
                       {opt.label}
                     </option>
                   ))}
@@ -118,6 +161,7 @@ export default function DynamicForm<TSchema extends ZodType<any, any>>({
                 setPreview={(preview) =>
                   setPreviews((prev) => ({ ...prev, [field.name]: preview }))
                 }
+                disabled={field.disabled}
               />
             );
           }
@@ -130,6 +174,7 @@ export default function DynamicForm<TSchema extends ZodType<any, any>>({
               label={field.label}
               placeholder={field.placeholder}
               type={field.type || 'text'}
+              disabled={field.disabled}
             />
           );
         })}
@@ -140,7 +185,11 @@ export default function DynamicForm<TSchema extends ZodType<any, any>>({
               type="button"
               variant="outline"
               onClick={() => {
-                form.reset(defaultValues);
+                const resetValues =
+                  type === 'update'
+                    ? ({ ...defaultValues, ...data } as z.infer<TSchema>)
+                    : (defaultValues as z.infer<TSchema>);
+                form.reset(resetValues);
                 setPreviews({});
                 onCancel?.();
               }}
@@ -149,7 +198,11 @@ export default function DynamicForm<TSchema extends ZodType<any, any>>({
             </Button>
           )}
           <Button type="submit" disabled={isPending}>
-            {isPending ? <Loader2 className="animate-spin" /> : submitText}
+            {isPending ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              submitText ?? (type === 'update' ? 'Update' : 'Submit')
+            )}
           </Button>
         </div>
       </form>
