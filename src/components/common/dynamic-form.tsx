@@ -22,6 +22,7 @@ export type DynamicFormField = {
     | 'number'
     | 'select'
     | 'textarea'
+    | 'boolean'
     | 'file';
   disabled?: boolean;
   options?: { label: string; value: string }[];
@@ -149,6 +150,47 @@ export default function DynamicForm<TSchema extends ZodType<any, any>>({
               </div>
             );
           }
+
+          if (field.type === "boolean") {
+            return (
+              <div key={field.name} className="flex items-center justify-between">
+                <label className="block text-sm font-medium mr-4">
+                  {field.label}
+                </label>
+          
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="sr-only peer"
+                    {...form.register(field.name as any)}
+                  />
+                  <div
+                    className="
+                      w-11 h-6
+                      bg-gray-200
+                      peer-focus:outline-none
+                      peer-focus:ring-2 peer-focus:ring-blue-500
+                      rounded-full
+                      peer
+                      peer-checked:bg-blue-600
+                      after:content-['']
+                      after:absolute
+                      after:top-[2px]
+                      after:left-[2px]
+                      after:bg-white
+                      after:border
+                      after:border-gray-300
+                      after:rounded-full
+                      after:h-5
+                      after:w-5
+                      after:transition-all
+                      peer-checked:after:translate-x-5
+                    "
+                  />
+                </label>
+              </div>
+            );
+          }          
 
           if (field.type === 'file') {
             return (

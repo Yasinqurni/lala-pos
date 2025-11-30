@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { FIELD_LOGIN_FORM, INITIAL_LOGIN_FORM, INITIAL_STATE_LOGIN_FORM } from "@/constants/auth-constant";
 import { loginSchemaFormValidation } from "@/validations/auth-validation";
 import { startTransition, useActionState, useEffect } from "react";
-import { loginAction } from "@/actions/login-action";
+import { loginAction } from "@/actions/auth/login-action";
 import { toast } from "sonner";
 import DynamicForm from "@/components/common/dynamic-form";
 

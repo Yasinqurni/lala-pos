@@ -17,7 +17,7 @@ import {
   useState,
 } from "react";
 import { toast } from "sonner";
-import { updateUserAction } from "@/actions/update-user-action";
+import { updateUserAction } from "@/actions/user/update-user-action";
 import { getDetailUserQuery } from "@/queries/users/get-detail-user";
 import { useQueryClient } from "@tanstack/react-query";
 

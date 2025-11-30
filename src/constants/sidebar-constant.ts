@@ -13,11 +13,11 @@ export const SIDEBAR_MENU_LIST = {
             icon: Album,
         },
         {
-            title: "Menu",
-            url: '/menu',
+            title: "Product",
+            url: '/product',
             icon: SquareMenu,
         },
-           {
+        {
             title: "User",
             url: '/admin/user',
             icon: User,

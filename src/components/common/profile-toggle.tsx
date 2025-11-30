@@ -9,7 +9,7 @@ import {
 } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useAuthStore } from "@/stores/auth-store";
-import signOut from "@/actions/auth-action";
+import signOut from "@/actions/auth/auth-action";
 
 export default function ProfileToggle() {
   const profile = useAuthStore((state) => state.profile);

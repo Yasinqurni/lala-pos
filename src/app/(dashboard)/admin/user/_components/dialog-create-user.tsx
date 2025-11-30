@@ -6,13 +6,16 @@ import { FIELD_USER_FORM, INITIAL_STATE_USER_FORM, INITIAL_USER_FORM } from "@/c
 import { userSchemaFormValidation } from "@/validations/user-validation";
 import { startTransition, useActionState, useEffect } from "react";
 import { toast } from "sonner";
-import { createUserAction } from "@/actions/create-user-action";
+import { createUserAction } from "@/actions/user/create-user-action";
+import { useQueryClient } from "@tanstack/react-query";
 
 type DialogCreateUserProps = {
   onClose: () => void;
 };
 
 export default function DialogCreateUser({ onClose }: DialogCreateUserProps) {
+  const queryClient = useQueryClient();
+
   const [createUserState, action, isPendingCreateUser] =
     useActionState(createUserAction, INITIAL_STATE_USER_FORM);
 
@@ -30,10 +33,13 @@ export default function DialogCreateUser({ onClose }: DialogCreateUserProps) {
     }
 
     if (createUserState?.status === "success") {
+      queryClient.invalidateQueries({
+        queryKey: ["users"],
+      });
       toast.success("Create User Success");
       onClose();
     }
-  }, [createUserState, onClose]);
+  }, [createUserState, queryClient, onClose]);
 
   return (
     <DialogContent className="sm:max-w-[425px]">
